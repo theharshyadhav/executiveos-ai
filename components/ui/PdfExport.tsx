@@ -236,7 +236,7 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
           // Left accent
           fill(...c); doc.roundedRect(M, y, 3, cardH, 1.5, 1.5, 'F')
           // Role badge
-          fill(c[0], c[1], c[2]) // Note: removed opacity array argument to prevent implicit signature issues
+          fill(c[0], c[1], c[2]) 
           doc.roundedRect(M + 7, y + 4, 24, 7, 1, 1, 'F')
           font(8, 'bold'); rgb(...c)
           doc.text(`${ROLE_EMOJIS[role] || ''} ${role}`, M + 9, y + 9)
@@ -377,18 +377,39 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
         disabled={loading}
         title="Export as PDF"
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
           padding: '7px 14px',
           background: loading ? 'rgba(255,255,255,0.04)' : 'rgba(239,68,68,0.12)',
           border: `1px solid ${loading ? 'rgba(255,255,255,0.08)' : 'rgba(239,68,68,0.4)'}`,
-          borderRadius: 8, color: loading ? '#404868' : '#f87171',
-          fontWeight: 700, fontSize: 12, cursor: loading ? 'not-allowed' : 'pointer',
-          fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s', whiteSpace: 'nowrap',
+          borderRadius: 8,
+          color: loading ? '#404868' : '#f87171',
+          fontWeight: 700,
+          fontSize: 12,
+          cursor: loading ? 'not-allowed' : 'pointer',
+          fontFamily: "'DM Sans',sans-serif",
+          transition: 'all 0.15s',
+          whiteSpace: 'nowrap',
         }}
       >
-        {loading
-          ? <><div style={{ width:12, height:12, border:'2px solid rgba(255,255,255,0.1)', borderTopColor:'#f87171', borderRadius:'50%', animation:'spin .8s linear infinite' }} />Generating PDF...</>
-          : <>📄 Export PDF</>}
+        {loading ? (
+          <>
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                border: '2px solid rgba(255,255,255,0.1)',
+                borderTopColor: '#f87171',
+                borderRadius: '50%',
+                animation: 'spin .8s linear infinite',
+              }}
+            />
+            Generating PDF...
+          </>
+        ) : (
+          <>📄 Export PDF</>
+        )}
       </button>
     </>
   )
