@@ -128,8 +128,8 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
       fill(79, 142, 247); doc.roundedRect(M + 17, 40, 8, 4, 1, 1, 'F')
       font(6, 'bold'); rgb(255,255,255); doc.text('AI', M + 19, 43.5)
 
-      // FREE badge
-      fill(34, 197, 94, 20); doc.roundedRect(M + 17, 45, 12, 4, 1, 1, 'F')
+      // FREE badge — FIX: Removed 4th argument to resolve type compilation crash
+      fill(34, 197, 94); doc.roundedRect(M + 17, 45, 12, 4, 1, 1, 'F')
       font(6, 'bold'); rgb(34, 197, 94); doc.text('FREE TIER', M + 18.5, 48.5)
 
       // Divider line
@@ -236,7 +236,7 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
           // Left accent
           fill(...c); doc.roundedRect(M, y, 3, cardH, 1.5, 1.5, 'F')
           // Role badge
-          fill(c[0], c[1], c[2], 30)
+          fill(c[0], c[1], c[2]) // Note: removed opacity array argument to prevent implicit signature issues
           doc.roundedRect(M + 7, y + 4, 24, 7, 1, 1, 'F')
           font(8, 'bold'); rgb(...c)
           doc.text(`${ROLE_EMOJIS[role] || ''} ${role}`, M + 9, y + 9)
@@ -292,7 +292,7 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
           // Section heading
           guard(16)
           fill(20, 30, 50); doc.roundedRect(M, y, CW, 10, 2, 2, 'F')
-          draw(26, 115, 232, 60); doc.setLineWidth(0.2); doc.roundedRect(M, y, CW, 10, 2, 2, 'S')
+          draw(26, 115, 232); doc.setLineWidth(0.2); doc.roundedRect(M, y, CW, 10, 2, 2, 'S')
           fill(26, 115, 232); doc.roundedRect(M, y, 3, 10, 1.5, 1.5, 'F')
           font(10, 'bold'); rgb(74, 158, 255)
           doc.text(heading || rawHeading.slice(0, 50), M + 7, y + 7)
@@ -363,23 +363,33 @@ export default function PdfExport({ title, content, type = 'directive', subtitle
   }
 
   return (
-    <button
-      onClick={exportPDF}
-      disabled={loading}
-      title="Export as PDF"
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: '7px 14px',
-        background: loading ? 'rgba(255,255,255,0.04)' : 'rgba(239,68,68,0.12)',
-        border: `1px solid ${loading ? 'rgba(255,255,255,0.08)' : 'rgba(239,68,68,0.4)'}`,
-        borderRadius: 8, color: loading ? '#404868' : '#f87171',
-        fontWeight: 700, fontSize: 12, cursor: loading ? 'not-allowed' : 'pointer',
-        fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s', whiteSpace: 'nowrap',
-      }}
-    >
-      {loading
-        ? <><div style={{ width:12, height:12, border:'2px solid rgba(255,255,255,0.1)', borderTopColor:'#f87171', borderRadius:'50%', animation:'spin .8s linear infinite' }} />Generating PDF...</>
-        : <>📄 Export PDF</>}
-    </button>
+    <>
+      {/* Inject animation styles for the loading spinner directly into the component */}
+      <style jsx global>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+      
+      <button
+        onClick={exportPDF}
+        disabled={loading}
+        title="Export as PDF"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '7px 14px',
+          background: loading ? 'rgba(255,255,255,0.04)' : 'rgba(239,68,68,0.12)',
+          border: `1px solid ${loading ? 'rgba(255,255,255,0.08)' : 'rgba(239,68,68,0.4)'}`,
+          borderRadius: 8, color: loading ? '#404868' : '#f87171',
+          fontWeight: 700, fontSize: 12, cursor: loading ? 'not-allowed' : 'pointer',
+          fontFamily: "'DM Sans',sans-serif", transition: 'all 0.15s', whiteSpace: 'nowrap',
+        }}
+      >
+        {loading
+          ? <><div style={{ width:12, height:12, border:'2px solid rgba(255,255,255,0.1)', borderTopColor:'#f87171', borderRadius:'50%', animation:'spin .8s linear infinite' }} />Generating PDF...</>
+          : <>📄 Export PDF</>}
+      </button>
+    </>
   )
 }
